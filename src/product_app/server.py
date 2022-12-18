@@ -1,4 +1,5 @@
 import grpc
+import logging
 
 import envs as _envs
 from product_pb2 import Id, Status, ProductFormRequest, ProductUpdateFormRequest, ProductResponse
@@ -37,7 +38,7 @@ class Product(ProductServicer):
     async def CreateProduct(self, request, context):
         # TODO : Check duplicate in db
         # TODO : Check form [name] duplicate
-        print("Input received: ", request)
+        logging.info("Input received: ", request)
         product1 = ProductResponse(
             name=request.name,
             description=request.description,
@@ -47,7 +48,7 @@ class Product(ProductServicer):
             id="This_Is_Product_Id",
             image_path="This_Is_Image_Path"
         )
-        print("Sending: ", product1)
+        logging.info("Sending: ", product1)
         return product1
 
 
@@ -62,6 +63,6 @@ async def run_server():
 
     # Start running
     await server.start()
-    print("Product gRPC Asynchronous-Server is up and running...")
+    logging.info("Product gRPC Asynchronous-Server is up and running...")
 
     await server.wait_for_termination()

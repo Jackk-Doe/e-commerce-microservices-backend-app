@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package product;
+
+message Null {}
+
+message Id {
+	string value = 1;
+}
+
+message Status {
+	bool value = 1;
+}
+
+message ProductFormRequest {
+	string name = 1;
+	string description = 2;
+	string seller_id = 3;
+	float price = 4;
+	int32 amount = 5;
+}
+
+message ProductUpdateFormRequest {
+	Id id = 1;
+	ProductFormRequest productFormRequest = 2;
+}
+
+message ProductResponse {
+	string name = 1;
+	string description = 2;
+	string seller_id = 3;
+	float price = 4;
+	int32 amount = 5;
+	string id = 6;
+	string image_path = 7;
+}
+
+service Product {
+	rpc GetProducts (Null) returns (stream ProductResponse);
+	rpc GetProductById (Id) returns (ProductResponse);
+	rpc CreateProduct (ProductFormRequest) returns (ProductResponse);
+	rpc UpdateProduct (ProductUpdateFormRequest) returns (ProductResponse);
+	rpc DeleteProduct (Id) returns (Status);
+}

@@ -7,7 +7,6 @@ from product_pb2_grpc import ProductServicer, add_ProductServicer_to_server
 
 class Product(ProductServicer):
     async def GetProducts(self, request, context):
-        print("GetProducts() called")
         product1 = ProductResponse(
             name="Test Name",
             description="Test Description",

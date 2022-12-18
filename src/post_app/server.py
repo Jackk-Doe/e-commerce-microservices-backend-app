@@ -21,6 +21,9 @@ class Product(ProductServicer):
         # return super().GetProducts(request, context)
 
     async def GetProductById(self, request, context):
+        if request.value == "":
+            await context.abort(grpc.StatusCode.NOT_FOUND, "Request ID can't be empty")
+
         product1 = ProductResponse(
             name="Test Name",
             description="Test Description",
@@ -32,7 +35,24 @@ class Product(ProductServicer):
         )
         return product1
 
+    async def CreateProduct(self, request, context):
+        # TODO : Check duplicate in db
+        # TODO : Check form [name] duplicate
+        print("Input received: ", request)
+        product1 = ProductResponse(
+            name=request.name,
+            description=request.description,
+            seller_id=request.seller_id,
+            price=request.price,
+            amount=request.amount,
+            id="This_Is_Product_Id",
+            image_path="This_Is_Image_Path"
+        )
+        print("Sending: ", product1)
+        return product1
 
+
+# Function to run Server
 async def run_server():
     PORT = _envs.PORT
 

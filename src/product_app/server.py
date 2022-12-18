@@ -2,8 +2,21 @@ import grpc
 import logging
 
 import envs as _envs
+import database.db as _db
+import services.product as _services_product
 from product_pb2 import Id, Status, ProductFormRequest, ProductUpdateFormRequest, ProductResponse
 from product_pb2_grpc import ProductServicer, add_ProductServicer_to_server
+
+
+logger = logging.getLogger(__name__)
+
+# This function to access database
+def get_db():
+    db = _db.SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 class Product(ProductServicer):
@@ -36,20 +49,35 @@ class Product(ProductServicer):
         return product1
 
     async def CreateProduct(self, request, context):
-        # TODO : Check duplicate in db
-        # TODO : Check form [name] duplicate
-        logging.info("Input received: ", request)
-        product1 = ProductResponse(
+        logger.info("Input received: "+str(request))
+
+        db_gen = get_db()
+        db = next(db_gen)
+
+        created_product = await _services_product.create_product(
+            db=db,
             name=request.name,
-            description=request.description,
+            des=request.description,
             seller_id=request.seller_id,
-            price=request.price,
+            price=request.price
+        )
+
+        # TODO LATER : Upload product image after storing in DB
+        # TODO : Convert to gRPC Dto
+        # TODO : Update ProductResponse.amount field
+        
+        product = ProductResponse(
+            name=created_product.name,
+            description=created_product.description,
+            seller_id=created_product.seller_id,
+            price=created_product.price,
             amount=request.amount,
-            id="This_Is_Product_Id",
+            id=created_product.id,
             image_path="This_Is_Image_Path"
         )
-        logging.info("Sending: ", product1)
-        return product1
+        logger.info("Sending: "+str(product))
+
+        return product
 
 
 # Function to run Server

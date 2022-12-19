@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rproduct.proto\x12\x07product\"\x06\n\x04Null\"\x13\n\x02Id\x12\r\n\x05value\x18\x01 \x01(\t\"\x17\n\x06Status\x12\r\n\x05value\x18\x01 \x01(\x08\"i\n\x12ProductFormRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x11\n\tseller_id\x18\x03 \x01(\t\x12\r\n\x05price\x18\x04 \x01(\x02\x12\x0e\n\x06\x61mount\x18\x05 \x01(\x05\"l\n\x18ProductUpdateFormRequest\x12\x17\n\x02id\x18\x01 \x01(\x0b\x32\x0b.product.Id\x12\x37\n\x12productFormRequest\x18\x02 \x01(\x0b\x32\x1b.product.ProductFormRequest\"\x86\x01\n\x0fProductResponse\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x11\n\tseller_id\x18\x03 \x01(\t\x12\r\n\x05price\x18\x04 \x01(\x02\x12\x0e\n\x06\x61mount\x18\x05 \x01(\x05\x12\n\n\x02id\x18\x06 \x01(\t\x12\x12\n\nimage_path\x18\x07 \x01(\t2\xc1\x02\n\x07Product\x12\x38\n\x0bGetProducts\x12\r.product.Null\x1a\x18.product.ProductResponse0\x01\x12\x37\n\x0eGetProductById\x12\x0b.product.Id\x1a\x18.product.ProductResponse\x12\x46\n\rCreateProduct\x12\x1b.product.ProductFormRequest\x1a\x18.product.ProductResponse\x12L\n\rUpdateProduct\x12!.product.ProductUpdateFormRequest\x1a\x18.product.ProductResponse\x12-\n\rDeleteProduct\x12\x0b.product.Id\x1a\x0f.product.Statusb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rproduct.proto\x12\x07product\"\x06\n\x04Null\"\x13\n\x02Id\x12\r\n\x05value\x18\x01 \x01(\t\"\x17\n\x06Status\x12\r\n\x05value\x18\x01 \x01(\x08\"g\n\x10ProductInputForm\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x11\n\tseller_id\x18\x03 \x01(\t\x12\r\n\x05price\x18\x04 \x01(\x02\x12\x0e\n\x06\x61mount\x18\x05 \x01(\x05\"h\n\x16ProductUpdateInputForm\x12\x17\n\x02id\x18\x01 \x01(\x0b\x32\x0b.product.Id\x12\x35\n\x12productFormRequest\x18\x02 \x01(\x0b\x32\x19.product.ProductInputForm\"\x81\x01\n\nProductDTO\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x11\n\tseller_id\x18\x03 \x01(\t\x12\r\n\x05price\x18\x04 \x01(\x02\x12\x0e\n\x06\x61mount\x18\x05 \x01(\x05\x12\n\n\x02id\x18\x06 \x01(\t\x12\x12\n\nimage_path\x18\x07 \x01(\t2\xa9\x02\n\x07Product\x12\x33\n\x0bGetProducts\x12\r.product.Null\x1a\x13.product.ProductDTO0\x01\x12\x32\n\x0eGetProductById\x12\x0b.product.Id\x1a\x13.product.ProductDTO\x12?\n\rCreateProduct\x12\x19.product.ProductInputForm\x1a\x13.product.ProductDTO\x12\x45\n\rUpdateProduct\x12\x1f.product.ProductUpdateInputForm\x1a\x13.product.ProductDTO\x12-\n\rDeleteProduct\x12\x0b.product.Id\x1a\x0f.product.Statusb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'product_pb2', globals())
@@ -26,12 +26,12 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _ID._serialized_end=53
   _STATUS._serialized_start=55
   _STATUS._serialized_end=78
-  _PRODUCTFORMREQUEST._serialized_start=80
-  _PRODUCTFORMREQUEST._serialized_end=185
-  _PRODUCTUPDATEFORMREQUEST._serialized_start=187
-  _PRODUCTUPDATEFORMREQUEST._serialized_end=295
-  _PRODUCTRESPONSE._serialized_start=298
-  _PRODUCTRESPONSE._serialized_end=432
-  _PRODUCT._serialized_start=435
-  _PRODUCT._serialized_end=756
+  _PRODUCTINPUTFORM._serialized_start=80
+  _PRODUCTINPUTFORM._serialized_end=183
+  _PRODUCTUPDATEINPUTFORM._serialized_start=185
+  _PRODUCTUPDATEINPUTFORM._serialized_end=289
+  _PRODUCTDTO._serialized_start=292
+  _PRODUCTDTO._serialized_end=421
+  _PRODUCT._serialized_start=424
+  _PRODUCT._serialized_end=721
 # @@protoc_insertion_point(module_scope)

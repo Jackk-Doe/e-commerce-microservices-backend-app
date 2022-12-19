@@ -12,7 +12,7 @@ message Status {
 	bool value = 1;
 }
 
-message ProductFormRequest {
+message ProductInputForm {
 	string name = 1;
 	string description = 2;
 	string seller_id = 3;
@@ -20,12 +20,12 @@ message ProductFormRequest {
 	int32 amount = 5;
 }
 
-message ProductUpdateFormRequest {
+message ProductUpdateInputForm {
 	Id id = 1;
-	ProductFormRequest productFormRequest = 2;
+	ProductInputForm productFormRequest = 2;
 }
 
-message ProductResponse {
+message ProductDTO {
 	string name = 1;
 	string description = 2;
 	string seller_id = 3;
@@ -35,10 +35,17 @@ message ProductResponse {
 	string image_path = 7;
 }
 
+// message ProductListDTO {
+// 	int page = 1;
+// 	int total_page = 2;
+// 	int limit = 3;
+// 	repeated ProductDTO products = 1;
+// }
+
 service Product {
-	rpc GetProducts (Null) returns (stream ProductResponse);
-	rpc GetProductById (Id) returns (ProductResponse);
-	rpc CreateProduct (ProductFormRequest) returns (ProductResponse);
-	rpc UpdateProduct (ProductUpdateFormRequest) returns (ProductResponse);
+	rpc GetProducts (Null) returns (stream ProductDTO);
+	rpc GetProductById (Id) returns (ProductDTO);
+	rpc CreateProduct (ProductInputForm) returns (ProductDTO);
+	rpc UpdateProduct (ProductUpdateInputForm) returns (ProductDTO);
 	rpc DeleteProduct (Id) returns (Status);
 }

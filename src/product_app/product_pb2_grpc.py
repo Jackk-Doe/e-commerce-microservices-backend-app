@@ -6,7 +6,14 @@ import product_pb2 as product__pb2
 
 
 class ProductStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """message ProductListDTO {
+    	int page = 1;
+    	int total_page = 2;
+    	int limit = 3;
+    	repeated ProductDTO products = 1;
+    }
+
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -17,22 +24,22 @@ class ProductStub(object):
         self.GetProducts = channel.unary_stream(
                 '/product.Product/GetProducts',
                 request_serializer=product__pb2.Null.SerializeToString,
-                response_deserializer=product__pb2.ProductResponse.FromString,
+                response_deserializer=product__pb2.ProductDTO.FromString,
                 )
         self.GetProductById = channel.unary_unary(
                 '/product.Product/GetProductById',
                 request_serializer=product__pb2.Id.SerializeToString,
-                response_deserializer=product__pb2.ProductResponse.FromString,
+                response_deserializer=product__pb2.ProductDTO.FromString,
                 )
         self.CreateProduct = channel.unary_unary(
                 '/product.Product/CreateProduct',
-                request_serializer=product__pb2.ProductFormRequest.SerializeToString,
-                response_deserializer=product__pb2.ProductResponse.FromString,
+                request_serializer=product__pb2.ProductInputForm.SerializeToString,
+                response_deserializer=product__pb2.ProductDTO.FromString,
                 )
         self.UpdateProduct = channel.unary_unary(
                 '/product.Product/UpdateProduct',
-                request_serializer=product__pb2.ProductUpdateFormRequest.SerializeToString,
-                response_deserializer=product__pb2.ProductResponse.FromString,
+                request_serializer=product__pb2.ProductUpdateInputForm.SerializeToString,
+                response_deserializer=product__pb2.ProductDTO.FromString,
                 )
         self.DeleteProduct = channel.unary_unary(
                 '/product.Product/DeleteProduct',
@@ -42,7 +49,14 @@ class ProductStub(object):
 
 
 class ProductServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """message ProductListDTO {
+    	int page = 1;
+    	int total_page = 2;
+    	int limit = 3;
+    	repeated ProductDTO products = 1;
+    }
+
+    """
 
     def GetProducts(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -80,22 +94,22 @@ def add_ProductServicer_to_server(servicer, server):
             'GetProducts': grpc.unary_stream_rpc_method_handler(
                     servicer.GetProducts,
                     request_deserializer=product__pb2.Null.FromString,
-                    response_serializer=product__pb2.ProductResponse.SerializeToString,
+                    response_serializer=product__pb2.ProductDTO.SerializeToString,
             ),
             'GetProductById': grpc.unary_unary_rpc_method_handler(
                     servicer.GetProductById,
                     request_deserializer=product__pb2.Id.FromString,
-                    response_serializer=product__pb2.ProductResponse.SerializeToString,
+                    response_serializer=product__pb2.ProductDTO.SerializeToString,
             ),
             'CreateProduct': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateProduct,
-                    request_deserializer=product__pb2.ProductFormRequest.FromString,
-                    response_serializer=product__pb2.ProductResponse.SerializeToString,
+                    request_deserializer=product__pb2.ProductInputForm.FromString,
+                    response_serializer=product__pb2.ProductDTO.SerializeToString,
             ),
             'UpdateProduct': grpc.unary_unary_rpc_method_handler(
                     servicer.UpdateProduct,
-                    request_deserializer=product__pb2.ProductUpdateFormRequest.FromString,
-                    response_serializer=product__pb2.ProductResponse.SerializeToString,
+                    request_deserializer=product__pb2.ProductUpdateInputForm.FromString,
+                    response_serializer=product__pb2.ProductDTO.SerializeToString,
             ),
             'DeleteProduct': grpc.unary_unary_rpc_method_handler(
                     servicer.DeleteProduct,
@@ -110,7 +124,14 @@ def add_ProductServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Product(object):
-    """Missing associated documentation comment in .proto file."""
+    """message ProductListDTO {
+    	int page = 1;
+    	int total_page = 2;
+    	int limit = 3;
+    	repeated ProductDTO products = 1;
+    }
+
+    """
 
     @staticmethod
     def GetProducts(request,
@@ -125,7 +146,7 @@ class Product(object):
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/product.Product/GetProducts',
             product__pb2.Null.SerializeToString,
-            product__pb2.ProductResponse.FromString,
+            product__pb2.ProductDTO.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -142,7 +163,7 @@ class Product(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/product.Product/GetProductById',
             product__pb2.Id.SerializeToString,
-            product__pb2.ProductResponse.FromString,
+            product__pb2.ProductDTO.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -158,8 +179,8 @@ class Product(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/product.Product/CreateProduct',
-            product__pb2.ProductFormRequest.SerializeToString,
-            product__pb2.ProductResponse.FromString,
+            product__pb2.ProductInputForm.SerializeToString,
+            product__pb2.ProductDTO.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -175,8 +196,8 @@ class Product(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/product.Product/UpdateProduct',
-            product__pb2.ProductUpdateFormRequest.SerializeToString,
-            product__pb2.ProductResponse.FromString,
+            product__pb2.ProductUpdateInputForm.SerializeToString,
+            product__pb2.ProductDTO.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

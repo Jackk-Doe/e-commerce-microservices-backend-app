@@ -4,7 +4,7 @@ import logging
 import envs as _envs
 import database.db as _db
 import services.product as _services_product
-from product_pb2 import Id, Status, ProductFormRequest, ProductUpdateFormRequest, ProductResponse
+from product_pb2 import Id, Status, ProductInputForm, ProductUpdateInputForm, ProductDTO
 from product_pb2_grpc import ProductServicer, add_ProductServicer_to_server
 
 
@@ -21,7 +21,7 @@ def get_db():
 
 class Product(ProductServicer):
     async def GetProducts(self, request, context):
-        product1 = ProductResponse(
+        product1 = ProductDTO(
             name="Test Name",
             description="Test Description",
             seller_id="This_Is_Seller_Id",
@@ -37,7 +37,7 @@ class Product(ProductServicer):
         if request.value == "":
             await context.abort(grpc.StatusCode.NOT_FOUND, "Request ID can't be empty")
 
-        product1 = ProductResponse(
+        product1 = ProductDTO(
             name="Test Name",
             description="Test Description",
             seller_id="This_Is_Seller_Id",
@@ -64,9 +64,9 @@ class Product(ProductServicer):
 
         # TODO LATER : Upload product image after storing in DB
         # TODO : Convert to gRPC Dto
-        # TODO : Update ProductResponse.amount field
+        # TODO : Update ProductDTO.amount field
         
-        product = ProductResponse(
+        product = ProductDTO(
             name=created_product.name,
             description=created_product.description,
             seller_id=created_product.seller_id,

@@ -17,3 +17,7 @@ async def create_product(db: Session, name: str, des: str, price: float, seller_
 
 async def get_products(db: Session) -> list[_models.Product]:
     return db.query(_models.Product).all()
+
+
+async def get_product_by_id(db: Session, id: str) -> _models.Product:
+    return db.query(_models.Product).get(id)

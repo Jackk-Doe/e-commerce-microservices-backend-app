@@ -31,18 +31,19 @@ class Product(ProductServicer):
 
     async def GetProductById(self, request, context):
         if request.value == "":
-            await context.abort(grpc.StatusCode.NOT_FOUND, "Request ID can't be empty")
+            await context.abort(grpc.StatusCode.NOT_FOUND, "Request ID can't be EMPTY")
 
-        product1 = ProductDTO(
-            name="Test Name",
-            description="Test Description",
-            seller_id="This_Is_Seller_Id",
-            price=99.99,
-            amount=1000,
-            id="This_Is_Product_Id",
-            image_path="This_Is_Image_Path"
-        )
-        return product1
+        db_gen = get_db()
+        db = next(db_gen)
+        product = await _services_product.get_product_by_id(db=db, id=request.value)
+        
+        if not product:
+            await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID is not found")
+
+        # TODO : Update amount field later
+        product_dto = product.toProductDTO(amount=0)
+
+        return product_dto
 
 
     async def CreateProduct(self, request, context):

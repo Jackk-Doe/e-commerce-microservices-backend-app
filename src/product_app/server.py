@@ -21,17 +21,18 @@ def get_db():
 
 class Product(ProductServicer):
     async def GetProducts(self, request, context):
-        product1 = ProductDTO(
-            name="Test Name",
-            description="Test Description",
-            seller_id="This_Is_Seller_Id",
-            price=99.99,
-            amount=1000,
-            id="This_Is_Product_Id",
-            image_path="This_Is_Image_Path"
-        )
-        yield product1
-        # return super().GetProducts(request, context)
+        db_gen = get_db()
+        db = next(db_gen)
+        for product in await _services_product.get_products(db=db):
+            product = ProductDTO(
+                name=product.name,
+                description=product.description,
+                seller_id=product.seller_id,
+                price=product.price,
+                id=product.id,
+                image_path="This_Is_Image_Path"
+            )
+            yield product
 
     async def GetProductById(self, request, context):
         if request.value == "":
@@ -50,7 +51,6 @@ class Product(ProductServicer):
 
     async def CreateProduct(self, request, context):
         logger.info("Input received: "+str(request))
-
         db_gen = get_db()
         db = next(db_gen)
 

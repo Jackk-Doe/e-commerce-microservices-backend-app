@@ -21,3 +21,14 @@ async def get_products(db: Session) -> list[_models.Product]:
 
 async def get_product_by_id(db: Session, id: str) -> _models.Product:
     return db.query(_models.Product).get(id)
+
+
+async def delete_product(db: Session, product_id: str, user_id: str):
+    # product = db.query(_models.Product).get({"id": product_id})
+    product = await get_product_by_id(db=db, id=product_id)
+    if not product:
+        raise Exception("Product of the given request ID is not found")
+    if product.seller_id != user_id:
+        raise Exception("Requesting User is not an owner of this Product")
+    db.delete(product)
+    db.commit()

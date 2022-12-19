@@ -4,7 +4,7 @@ import logging
 import envs as _envs
 import database.db as _db
 import services.product as _services_product
-from product_pb2 import Id, Status, ProductInputForm, ProductUpdateInputForm, ProductDTO
+from product_pb2 import Id, Status, ProductInputForm, ProductIdWithUserId, ProductUpdateInputForm, ProductDTO
 from product_pb2_grpc import ProductServicer, add_ProductServicer_to_server
 
 
@@ -31,7 +31,7 @@ class Product(ProductServicer):
 
     async def GetProductById(self, request, context):
         if request.value == "":
-            await context.abort(grpc.StatusCode.NOT_FOUND, "Request ID can't be EMPTY")
+            await context.abort(grpc.StatusCode.NOT_FOUND, "Request Product ID can't be EMPTY")
 
         db_gen = get_db()
         db = next(db_gen)
@@ -68,6 +68,21 @@ class Product(ProductServicer):
 
         return product
 
+
+    async def DeleteProduct(self, request, context):
+        if request.product_id.value == '' or request.user_id.value == '':
+            await context.abort(grpc.StatusCode.NOT_FOUND, "Request Product ID and User ID can't be EMPTY")
+
+        status = Status() #Default: False
+        db_gen = get_db()
+        db = next(db_gen)
+        try:
+            await _services_product.delete_product(db=db, product_id=request.product_id.value, user_id=request.user_id.value)
+            status.value = True
+        except Exception as err:
+            logger.error("Exception with: %s", str(err))
+
+        return status
 
 # Function to run Server
 async def run_server():

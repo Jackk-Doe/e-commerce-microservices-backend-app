@@ -24,15 +24,10 @@ class Product(ProductServicer):
         db_gen = get_db()
         db = next(db_gen)
         for product in await _services_product.get_products(db=db):
-            product = ProductDTO(
-                name=product.name,
-                description=product.description,
-                seller_id=product.seller_id,
-                price=product.price,
-                id=product.id,
-                image_path="This_Is_Image_Path"
-            )
-            yield product
+            # TODO : Update amount field later
+            product_dto = product.toProductDTO(amount=0)
+            yield product_dto
+
 
     async def GetProductById(self, request, context):
         if request.value == "":
@@ -49,11 +44,13 @@ class Product(ProductServicer):
         )
         return product1
 
+
     async def CreateProduct(self, request, context):
         logger.info("Input received: "+str(request))
         db_gen = get_db()
         db = next(db_gen)
 
+        # Create to Product database
         created_product = await _services_product.create_product(
             db=db,
             name=request.name,
@@ -63,18 +60,9 @@ class Product(ProductServicer):
         )
 
         # TODO LATER : Upload product image after storing in DB
-        # TODO : Convert to gRPC Dto
         # TODO : Update ProductDTO.amount field
         
-        product = ProductDTO(
-            name=created_product.name,
-            description=created_product.description,
-            seller_id=created_product.seller_id,
-            price=created_product.price,
-            amount=request.amount,
-            id=created_product.id,
-            image_path="This_Is_Image_Path"
-        )
+        product = created_product.toProductDTO(amount=request.amount)
         logger.info("Sending: "+str(product))
 
         return product

@@ -3,13 +3,14 @@ import logging
 
 import envs as _envs
 import server as _server
-import database.product_model as _db_product
+import database.models as _db_models
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(filename)s::%(levelname)s -> %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
-    # Connect or Create (if not existed) Product table database
-    _db_product.connect_or_initialize_db()
+    # Connect or Create (if not existed) database tables,
+    # from Models in models.py file
+    _db_models.connect_or_initialize_db()
 
     # Run gRPC server in Async
     try:

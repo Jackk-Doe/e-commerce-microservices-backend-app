@@ -1,7 +1,7 @@
 import uuid
 from sqlalchemy.orm import Session
 
-import database.product_model as _db_pd
+import database.models as _db_pd
 
 
 async def create_product(db: Session, name: str, des: str, price: float, seller_id: str) -> _db_pd.Product:

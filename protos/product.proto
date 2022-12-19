@@ -20,8 +20,13 @@ message ProductInputForm {
 	int32 amount = 5;
 }
 
+message ProductIdWithUserId {
+	Id product_id = 1;
+	Id user_id = 2;
+}
+
 message ProductUpdateInputForm {
-	Id id = 1;
+	ProductIdWithUserId ids = 1;
 	ProductInputForm productFormRequest = 2;
 }
 
@@ -47,5 +52,5 @@ service Product {
 	rpc GetProductById (Id) returns (ProductDTO);
 	rpc CreateProduct (ProductInputForm) returns (ProductDTO);
 	rpc UpdateProduct (ProductUpdateInputForm) returns (ProductDTO);
-	rpc DeleteProduct (Id) returns (Status);
+	rpc DeleteProduct (ProductIdWithUserId) returns (Status);
 }

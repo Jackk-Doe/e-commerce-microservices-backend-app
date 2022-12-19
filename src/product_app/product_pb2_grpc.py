@@ -43,7 +43,7 @@ class ProductStub(object):
                 )
         self.DeleteProduct = channel.unary_unary(
                 '/product.Product/DeleteProduct',
-                request_serializer=product__pb2.Id.SerializeToString,
+                request_serializer=product__pb2.ProductIdWithUserId.SerializeToString,
                 response_deserializer=product__pb2.Status.FromString,
                 )
 
@@ -113,7 +113,7 @@ def add_ProductServicer_to_server(servicer, server):
             ),
             'DeleteProduct': grpc.unary_unary_rpc_method_handler(
                     servicer.DeleteProduct,
-                    request_deserializer=product__pb2.Id.FromString,
+                    request_deserializer=product__pb2.ProductIdWithUserId.FromString,
                     response_serializer=product__pb2.Status.SerializeToString,
             ),
     }
@@ -213,7 +213,7 @@ class Product(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/product.Product/DeleteProduct',
-            product__pb2.Id.SerializeToString,
+            product__pb2.ProductIdWithUserId.SerializeToString,
             product__pb2.Status.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

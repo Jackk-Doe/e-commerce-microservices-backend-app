@@ -1,3 +1,4 @@
 # My config
 .env
 venv/
+src/product_app/post.db

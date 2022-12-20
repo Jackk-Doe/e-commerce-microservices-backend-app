@@ -93,6 +93,7 @@ class Product(ProductServicer):
         db = next(db_gen)
         try:
             await _services_product.delete_product(db=db, product_id=request.product_id.value, user_id=request.user_id.value)
+            await _services_inventory.delete_inventory_by_product_id(db=db, p_id=request.product_id.value)
             status.value = True
         except Exception as err:
             logger.error("Exception with: %s", str(err))

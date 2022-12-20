@@ -15,3 +15,12 @@ async def create_inventory(db: Session, p_id: str, amount: int) -> _models.Inven
 
 async def get_inventory_by_product_id(db: Session, p_id: str) -> _models.Inventory:
     return db.query(_models.Inventory).filter(_models.Inventory.product_id==p_id).first()
+
+
+async def delete_inventory_by_product_id(db: Session, p_id: str) -> None:
+    inventory = await get_inventory_by_product_id(db=db, p_id=p_id)
+    if not inventory:
+        # If no Inventory, stop here
+        return
+    db.delete(inventory)
+    db.commit()

@@ -24,3 +24,15 @@ async def delete_inventory_by_product_id(db: Session, p_id: str) -> None:
         return
     db.delete(inventory)
     db.commit()
+
+
+async def update_inventory(db: Session, p_id: str, amount: int) -> _models.Inventory:
+    inventory = await get_inventory_by_product_id(db=db, p_id=p_id)
+    if not inventory:
+        inventory = await create_inventory(db=db, p_id=p_id, amount=amount)
+    else:
+        inventory.amount = amount
+        db.add(inventory)
+        db.commit()
+        db.refresh(inventory)
+    return inventory

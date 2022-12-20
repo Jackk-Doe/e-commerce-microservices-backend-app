@@ -24,6 +24,7 @@ class Product(ProductServicer):
     async def GetProducts(self, request, context):
         db_gen = get_db()
         db = next(db_gen)
+        # TODO : Put in try-except
         for product in await _services_product.get_products(db=db):
             inventory = await _services_inventory.get_inventory_by_product_id(db=db, p_id=product.id)
             # TODO : Get product image
@@ -50,7 +51,11 @@ class Product(ProductServicer):
         # TODO : Get product image
 
         # Get Inventory amount of the [product]
-        inventory = await _services_inventory.get_inventory_by_product_id(db=db, p_id=product.id)
+        try:
+            inventory = await _services_inventory.get_inventory_by_product_id(db=db, p_id=product.id)
+        except Exception as err:
+            await context.abort(grpc.StatusCode.INTERNAL, str(err))
+
         if not inventory:
             await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID has no Inventory")
 
@@ -109,6 +114,8 @@ class Product(ProductServicer):
         if product.seller_id != request.user_id.value:
             await context.abort(grpc.StatusCode.PERMISSION_DENIED, "Requesting User is not an owner of this Product")
 
+        # TODO : Delete image
+
         try:
             await _services_product.delete_product(db=db, product_id=request.product_id.value)
             await _services_inventory.delete_inventory_by_product_id(db=db, p_id=request.product_id.value)
@@ -117,6 +124,43 @@ class Product(ProductServicer):
             logger.error("Exception with: %s", str(err))
 
         return status
+
+
+    async def UpdateProduct(self, request, context):
+        if request.ids.product_id.value == '' or request.ids.user_id.value == '':
+            await context.abort(grpc.StatusCode.NOT_FOUND, "Request Product ID and User ID can't be EMPTY")
+        db_gen = get_db()
+        db = next(db_gen)
+
+        try:
+            product = await _services_product.get_product_by_id(db=db, id=request.ids.product_id.value)
+        except Exception as err:
+            await context.abort(grpc.StatusCode.INTERNAL, str(err))
+        if not product:
+            await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID is not found")
+
+        if product.seller_id != request.ids.user_id.value:
+            await context.abort(grpc.StatusCode.PERMISSION_DENIED, "Requesting User is not an owner of this Product")
+
+        try:
+            updated_product = await _services_product.update_product(
+                db=db, 
+                product=product, 
+                name=request.productFormRequest.name,
+                des=request.productFormRequest.description,
+                price=request.productFormRequest.price,
+            )
+            updated_inventory = await _services_inventory.update_inventory(
+                db=db,
+                p_id=product.id,
+                amount=request.productFormRequest.amount,
+            )
+        except Exception as err:
+            await context.abort(grpc.StatusCode.INTERNAL, str(err))
+
+        converted_updated_product = updated_product.toProductDTO(amount=updated_inventory.amount)
+        return converted_updated_product
+
 
 # Function to run Server
 async def run_server():

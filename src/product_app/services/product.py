@@ -27,3 +27,13 @@ async def delete_product(db: Session, product_id: str):
     product = await get_product_by_id(db=db, id=product_id)
     db.delete(product)
     db.commit()
+
+
+async def update_product(db: Session, product: _models.Product, name: str, des: str, price: float) -> _models.Product:
+    product.name = name
+    product.description = des
+    product.price = price
+    db.add(product)
+    db.commit()
+    db.refresh(product)
+    return product

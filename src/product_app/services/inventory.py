@@ -12,3 +12,6 @@ async def create_inventory(db: Session, p_id: str, amount: int) -> _models.Inven
     db.refresh(new_inventory)
     return new_inventory
     
+
+async def get_inventory_by_product_id(db: Session, p_id: str) -> _models.Inventory:
+    return db.query(_models.Inventory).filter(_models.Inventory.product_id==p_id).first()

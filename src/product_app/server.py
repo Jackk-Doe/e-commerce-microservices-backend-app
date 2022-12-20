@@ -25,8 +25,11 @@ class Product(ProductServicer):
         db_gen = get_db()
         db = next(db_gen)
         for product in await _services_product.get_products(db=db):
-            # TODO : Update amount field later
-            product_dto = product.toProductDTO(amount=0)
+            inventory = await _services_inventory.get_inventory_by_product_id(db=db, p_id=product.id)
+            # TODO : Get product image
+            if not inventory:
+                await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID has no Inventory")
+            product_dto = product.toProductDTO(amount=inventory.amount)
             yield product_dto
 
 
@@ -41,8 +44,14 @@ class Product(ProductServicer):
         if not product:
             await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID is not found")
 
-        # TODO : Update amount field later
-        product_dto = product.toProductDTO(amount=0)
+        # TODO : Get product image
+
+        # Get Inventory amount of the [product]
+        inventory = await _services_inventory.get_inventory_by_product_id(db=db, p_id=product.id)
+        if not inventory:
+            await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID has no Inventory")
+
+        product_dto = product.toProductDTO(amount=inventory.amount)
 
         return product_dto
 

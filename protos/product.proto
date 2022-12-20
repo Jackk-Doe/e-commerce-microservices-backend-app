@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package product;
+
+message Null {}
+
+message Id {
+	string value = 1;
+}
+
+message Status {
+	bool value = 1;
+}
+
+message ProductInputForm {
+	string name = 1;
+	string description = 2;
+	string seller_id = 3;
+	float price = 4;
+	int32 amount = 5;
+}
+
+message ProductIdWithUserId {
+	Id product_id = 1;
+	Id user_id = 2;
+}
+
+message ProductUpdateInputForm {
+	ProductIdWithUserId ids = 1;
+	ProductInputForm productFormRequest = 2;
+}
+
+message ProductDTO {
+	string name = 1;
+	string description = 2;
+	string seller_id = 3;
+	float price = 4;
+	int32 amount = 5;
+	string id = 6;
+	string image_path = 7;
+}
+
+// message ProductListDTO {
+// 	int page = 1;
+// 	int total_page = 2;
+// 	int limit = 3;
+// 	repeated ProductDTO products = 1;
+// }
+
+service Product {
+	rpc GetProducts (Null) returns (stream ProductDTO);
+	rpc GetProductById (Id) returns (ProductDTO);
+	rpc CreateProduct (ProductInputForm) returns (ProductDTO);
+	rpc UpdateProduct (ProductUpdateInputForm) returns (ProductDTO);
+	rpc DeleteProduct (ProductIdWithUserId) returns (Status);
+}

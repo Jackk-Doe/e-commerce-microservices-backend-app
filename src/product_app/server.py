@@ -142,6 +142,8 @@ class Product(ProductServicer):
         if product.seller_id != request.ids.user_id.value:
             await context.abort(grpc.StatusCode.PERMISSION_DENIED, "Requesting User is not an owner of this Product")
 
+        # TODO : Update photo
+
         try:
             updated_product = await _services_product.update_product(
                 db=db, 

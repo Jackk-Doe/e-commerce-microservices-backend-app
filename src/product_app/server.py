@@ -94,12 +94,25 @@ class Product(ProductServicer):
             await context.abort(grpc.StatusCode.NOT_FOUND, "Request Product ID and User ID can't be EMPTY")
 
         status = Status() #Default: False
+
         db_gen = get_db()
         db = next(db_gen)
+
         try:
-            await _services_product.delete_product(db=db, product_id=request.product_id.value, user_id=request.user_id.value)
+            product = await _services_product.get_product_by_id(db=db, id=request.product_id.value)
+        except Exception as err:
+            await context.abort(grpc.StatusCode.INTERNAL, str(err))
+
+        if not product:
+            await context.abort(grpc.StatusCode.NOT_FOUND, "Deleting product of the given request ID is not found")
+
+        if product.seller_id != request.user_id.value:
+            await context.abort(grpc.StatusCode.PERMISSION_DENIED, "Requesting User is not an owner of this Product")
+
+        try:
+            await _services_product.delete_product(db=db, product_id=request.product_id.value)
             await _services_inventory.delete_inventory_by_product_id(db=db, p_id=request.product_id.value)
-            status.value = True
+            status.value = True #Delete Success
         except Exception as err:
             logger.error("Exception with: %s", str(err))
 

@@ -1,7 +1,8 @@
-from sqlalchemy import Column, String, Float
+from sqlalchemy import Column, String, Float, Integer
 
 from . import db as _db
 from product_pb2 import ProductDTO
+
 
 class Product(_db.Base):
     __tablename__ = "products"
@@ -14,7 +15,7 @@ class Product(_db.Base):
 
     # TODO : Update thie method later
     def __repr__(self) -> str:
-        return f"Product name({self.name}) des({self.description})"
+        return f"Product: name({self.name}); price({self.price}); des({self.description})"
 
     # Convernt Product model to gRPC message ProductDTO
     def toProductDTO(self, amount: int) -> ProductDTO:
@@ -27,6 +28,16 @@ class Product(_db.Base):
             image_path=self.image_url,
             amount=amount,
         )
+
+
+class Inventory(_db.Base):
+    __tablename__ = "inventory"
+    id = Column(String, primary_key=True)
+    product_id = Column(String, nullable=False)
+    amount = Column(Integer, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"Inventory: amount({self.amount}); product_id({self.product_id})"
 
 
 # Connect or Initialize database

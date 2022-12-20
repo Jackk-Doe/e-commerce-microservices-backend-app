@@ -40,10 +40,16 @@ message ProductDTO {
 	string image_path = 7;
 }
 
+/// TO-USE-LATER
+// message ProductListInput {
+// 	optional int32 page = 1;
+// 	optional int32 limit = 2;
+// }
+
+/// TO-USE-LATER
 // message ProductListDTO {
-// 	int page = 1;
-// 	int total_page = 2;
-// 	int limit = 3;
+// 	int32 page = 1;
+// 	int32 total_page = 2;
 // 	repeated ProductDTO products = 1;
 // }
 

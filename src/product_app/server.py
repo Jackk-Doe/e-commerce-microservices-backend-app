@@ -39,10 +39,10 @@ class Product(ProductServicer):
 
         db_gen = get_db()
         db = next(db_gen)
-        product = await _services_product.get_product_by_id(db=db, id=request.value)
-        
-        if not product:
-            await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID is not found")
+        try:
+            product = await _services_product.get_product_by_id(db=db, id=request.value)
+        except Exception as err:
+            await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
         # TODO : Get product image
 
@@ -57,30 +57,32 @@ class Product(ProductServicer):
 
 
     async def CreateProduct(self, request, context):
-        logger.info("Input received: "+str(request))
         db_gen = get_db()
         db = next(db_gen)
 
-        # Create to Product database
-        created_product = await _services_product.create_product(
-            db=db,
-            name=request.name,
-            des=request.description,
-            seller_id=request.seller_id,
-            price=request.price
-        )
+        try:
+            # Create to Product database
+            created_product = await _services_product.create_product(
+                db=db,
+                name=request.name,
+                des=request.description,
+                seller_id=request.seller_id,
+                price=request.price
+            )
 
-        new_inventory = await _services_inventory.create_inventory(
-            db=db,
-            p_id=created_product.id,
-            amount=request.amount
-        )
+            # Create Inventory into database
+            new_inventory = await _services_inventory.create_inventory(
+                db=db,
+                p_id=created_product.id,
+                amount=request.amount
+            )
+
+        except Exception as err:
+            await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
         # TODO LATER : Upload product image after storing in DB
         
         product = created_product.toProductDTO(amount=new_inventory.amount)
-        logger.info("Sending: "+str(product))
-
         return product
 
 

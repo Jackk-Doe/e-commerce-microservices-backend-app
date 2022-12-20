@@ -44,6 +44,9 @@ class Product(ProductServicer):
         except Exception as err:
             await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
+        if not product:
+            await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID is not found")
+
         # TODO : Get product image
 
         # Get Inventory amount of the [product]

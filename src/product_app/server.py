@@ -4,6 +4,7 @@ import logging
 import envs as _envs
 import database.db as _db
 import services.product as _services_product
+import services.inventory as _services_inventory
 from product_pb2 import Id, Status, ProductInputForm, ProductIdWithUserId, ProductUpdateInputForm, ProductDTO
 from product_pb2_grpc import ProductServicer, add_ProductServicer_to_server
 
@@ -60,10 +61,15 @@ class Product(ProductServicer):
             price=request.price
         )
 
+        new_inventory = await _services_inventory.create_inventory(
+            db=db,
+            p_id=created_product.id,
+            amount=request.amount
+        )
+
         # TODO LATER : Upload product image after storing in DB
-        # TODO : Update ProductDTO.amount field
         
-        product = created_product.toProductDTO(amount=request.amount)
+        product = created_product.toProductDTO(amount=new_inventory.amount)
         logger.info("Sending: "+str(product))
 
         return product

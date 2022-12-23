@@ -56,7 +56,7 @@ class User(UserServicer):
 
             except Exception as err:
                 await context.abort(grpc.StatusCode.INTERNAL, str(err))
-                
+
             token = await _services_user.generate_token(u_id=new_user.id)
             user_dto = new_user.toUserDTO(token=token)
 
@@ -64,8 +64,18 @@ class User(UserServicer):
 
 
     async def GetMe(self, request, context):
-        # TODO : Implement logic
-        return super().GetMe(request, context)
+        with get_db_session() as db_session:
+            try:
+                user = await _services_user.get_user_by_token(db=db_session, token=request.value)
+            except Exception as err:
+                await context.abort(grpc.StatusCode.INTERNAL, str(err))
+
+            if not user:
+                await context.abort(grpc.StatusCode.NOT_FOUND, 'User from a decoded input token is not found')
+
+            user_dto = user.toUserDTO(token=request.value)
+
+        return user_dto
 
 
     async def GetId(self, request, context):

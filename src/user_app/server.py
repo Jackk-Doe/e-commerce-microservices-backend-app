@@ -24,8 +24,15 @@ class User(UserServicer):
 
 
     async def SignUp(self, request, context):
-        # TODO : Implement logic
-        return super().SignUp(request, context)
+        with get_db_session() as db_session:
+            # TODO : Check User.name & User.email already existed
+            try:
+                new_user = await _services_user.sign_up_user(db=db_session, name=request.name, email=request.email, password=request.password)
+            except Exception as err:
+                await context.abort(grpc.StatusCode.INTERNAL, str(err))
+            # TODO : Generate JWT
+            user_dto = new_user.toUserDTO(token="This_is_token")
+        return user_dto
 
 
     async def GetMe(self, request, context):

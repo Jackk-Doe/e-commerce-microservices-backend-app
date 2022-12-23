@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package user;
+
+message Id {
+    string value = 1;
+}
+
+message Token {
+    string value = 1;
+}
+
+message UserSignUpForm {
+    string name = 1;
+    string email = 2;
+    string password = 3;
+}
+
+message UserLogInForm {
+    string email = 1;
+    string password = 2;
+}
+
+message UserDTO {
+    string name = 1;
+    string email = 2;
+    string token = 3;
+}
+
+service User {
+    rpc LogIn (UserLogInForm) returns (UserDTO);
+    rpc SignUp (UserSignUpForm) returns (UserDTO);
+    rpc GetMe (Token) returns (UserDTO);
+    rpc GetId (Token) returns (Id);
+
+    // Admin priviledge services
+    // TODO : Implement LATER
+    // rpc GetAllUsers ();
+    // rpc GetUserById ();
+    // rpc RemoveUser ();
+}

@@ -1,5 +1,6 @@
 import grpc
 import logging
+from typing import Optional
 
 import envs as _envs
 import database.db as _db
@@ -11,37 +12,41 @@ from product_pb2_grpc import ProductServicer, add_ProductServicer_to_server
 
 logger = logging.getLogger(__name__)
 
-# This function to access database
-def get_db():
-    db = _db.SessionLocal()
+# Return database local Session, or None
+def get_db_session() -> Optional[_db.SessionLocal]:
     try:
-        yield db
-    finally:
-        db.close()
+        return _db.SessionLocal()
+    except:
+        return None
 
 
 class Product(ProductServicer):
     async def GetProducts(self, request, context):
-        db_gen = get_db()
-        db = next(db_gen)
+        db_session = get_db_session()
+        if not db_session:
+            await context.abort(grpc.StatusCode.INTERNAL, "Error with getting DB Local Session")
+
         # TODO : Put in try-except
-        for product in await _services_product.get_products(db=db):
-            inventory = await _services_inventory.get_inventory_by_product_id(db=db, p_id=product.id)
+        for product in await _services_product.get_products(db=db_session):
+            inventory = await _services_inventory.get_inventory_by_product_id(db=db_session, p_id=product.id)
             # TODO : Get product image
             if not inventory:
                 await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID has no Inventory")
             product_dto = product.toProductDTO(amount=inventory.amount)
             yield product_dto
+        db_session.close()
 
 
     async def GetProductById(self, request, context):
         if request.value == "":
             await context.abort(grpc.StatusCode.NOT_FOUND, "Request Product ID can't be EMPTY")
 
-        db_gen = get_db()
-        db = next(db_gen)
+        db_session = get_db_session()
+        if not db_session:
+            await context.abort(grpc.StatusCode.INTERNAL, "Error with getting DB Local Session")
+
         try:
-            product = await _services_product.get_product_by_id(db=db, id=request.value)
+            product = await _services_product.get_product_by_id(db=db_session, id=request.value)
         except Exception as err:
             await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
@@ -52,7 +57,7 @@ class Product(ProductServicer):
 
         # Get Inventory amount of the [product]
         try:
-            inventory = await _services_inventory.get_inventory_by_product_id(db=db, p_id=product.id)
+            inventory = await _services_inventory.get_inventory_by_product_id(db=db_session, p_id=product.id)
         except Exception as err:
             await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
@@ -61,17 +66,20 @@ class Product(ProductServicer):
 
         product_dto = product.toProductDTO(amount=inventory.amount)
 
+        db_session.close()
         return product_dto
 
 
     async def CreateProduct(self, request, context):
-        db_gen = get_db()
-        db = next(db_gen)
+        db_session = get_db_session()
+        if not db_session:
+            await context.abort(grpc.StatusCode.INTERNAL, "Error with getting DB Local Session")
+
 
         try:
             # Create to Product database
             created_product = await _services_product.create_product(
-                db=db,
+                db=db_session,
                 name=request.name,
                 des=request.description,
                 seller_id=request.seller_id,
@@ -80,7 +88,7 @@ class Product(ProductServicer):
 
             # Create Inventory into database
             new_inventory = await _services_inventory.create_inventory(
-                db=db,
+                db=db_session,
                 p_id=created_product.id,
                 amount=request.amount
             )
@@ -91,6 +99,8 @@ class Product(ProductServicer):
         # TODO LATER : Upload product image after storing in DB
         
         product = created_product.toProductDTO(amount=new_inventory.amount)
+        
+        db_session.close()
         return product
 
 
@@ -100,11 +110,13 @@ class Product(ProductServicer):
 
         status = Status() #Default: False
 
-        db_gen = get_db()
-        db = next(db_gen)
+        db_session = get_db_session()
+        if not db_session:
+            await context.abort(grpc.StatusCode.INTERNAL, "Error with getting DB Local Session")
+
 
         try:
-            product = await _services_product.get_product_by_id(db=db, id=request.product_id.value)
+            product = await _services_product.get_product_by_id(db=db_session, id=request.product_id.value)
         except Exception as err:
             await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
@@ -117,23 +129,26 @@ class Product(ProductServicer):
         # TODO : Delete image
 
         try:
-            await _services_product.delete_product(db=db, product_id=request.product_id.value)
-            await _services_inventory.delete_inventory_by_product_id(db=db, p_id=request.product_id.value)
+            await _services_product.delete_product(db=db_session, product_id=request.product_id.value)
+            await _services_inventory.delete_inventory_by_product_id(db=db_session, p_id=request.product_id.value)
             status.value = True #Delete Success
         except Exception as err:
             logger.error("Exception with: %s", str(err))
 
+        db_session.close()
         return status
 
 
     async def UpdateProduct(self, request, context):
         if request.ids.product_id.value == '' or request.ids.user_id.value == '':
             await context.abort(grpc.StatusCode.NOT_FOUND, "Request Product ID and User ID can't be EMPTY")
-        db_gen = get_db()
-        db = next(db_gen)
+        db_session = get_db_session()
+        if not db_session:
+            await context.abort(grpc.StatusCode.INTERNAL, "Error with getting DB Local Session")
+
 
         try:
-            product = await _services_product.get_product_by_id(db=db, id=request.ids.product_id.value)
+            product = await _services_product.get_product_by_id(db=db_session, id=request.ids.product_id.value)
         except Exception as err:
             await context.abort(grpc.StatusCode.INTERNAL, str(err))
         if not product:
@@ -146,14 +161,14 @@ class Product(ProductServicer):
 
         try:
             updated_product = await _services_product.update_product(
-                db=db, 
+                db=db_session, 
                 product=product, 
                 name=request.productFormRequest.name,
                 des=request.productFormRequest.description,
                 price=request.productFormRequest.price,
             )
             updated_inventory = await _services_inventory.update_inventory(
-                db=db,
+                db=db_session,
                 p_id=product.id,
                 amount=request.productFormRequest.amount,
             )
@@ -161,6 +176,8 @@ class Product(ProductServicer):
             await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
         converted_updated_product = updated_product.toProductDTO(amount=updated_inventory.amount)
+
+        db_session.close()
         return converted_updated_product
 
 

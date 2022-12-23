@@ -1,0 +1,12 @@
+asyncio==3.4.3
+autopep8==2.0.1
+dnspython==2.2.1
+greenlet==2.0.1
+grpcio==1.51.1
+grpcio-tools==1.51.1
+protobuf==4.21.12
+pycodestyle==2.10.0
+python-dotenv==0.21.0
+SQLAlchemy==1.4.45
+tomli==2.0.1
+uuid==1.30

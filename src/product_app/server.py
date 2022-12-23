@@ -11,13 +11,16 @@ from product_pb2_grpc import ProductServicer, add_ProductServicer_to_server
 
 logger = logging.getLogger(__name__)
 
+# TODO : Fix database closing, may need to close manually
 # This function to access database
 def get_db():
     db = _db.SessionLocal()
     try:
         yield db
-    finally:
+        print("DB Closing")
         db.close()
+    except Exception as err:
+        logger.error(str(err))
 
 
 class Product(ProductServicer):
@@ -32,6 +35,7 @@ class Product(ProductServicer):
                 await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID has no Inventory")
             product_dto = product.toProductDTO(amount=inventory.amount)
             yield product_dto
+        db.close()
 
 
     async def GetProductById(self, request, context):
@@ -61,6 +65,7 @@ class Product(ProductServicer):
 
         product_dto = product.toProductDTO(amount=inventory.amount)
 
+        db.close()
         return product_dto
 
 
@@ -91,6 +96,8 @@ class Product(ProductServicer):
         # TODO LATER : Upload product image after storing in DB
         
         product = created_product.toProductDTO(amount=new_inventory.amount)
+        
+        db.close()
         return product
 
 
@@ -123,6 +130,7 @@ class Product(ProductServicer):
         except Exception as err:
             logger.error("Exception with: %s", str(err))
 
+        db.close()
         return status
 
 
@@ -161,6 +169,8 @@ class Product(ProductServicer):
             await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
         converted_updated_product = updated_product.toProductDTO(amount=updated_inventory.amount)
+
+        db.close()
         return converted_updated_product
 
 

@@ -29,3 +29,7 @@ async def generate_token(u_id: str) -> str:
 # Find a User where, matched param.name or param.email, or return None
 async def get_user_by_name_or_email(db: Session, name: str, email: str) -> _models.User:
     return db.query(_models.User).filter(or_(_models.User.name == name, _models.User.email == email)).first()
+
+
+async def get_user_by_email(db: Session, email: str) -> _models.User:
+    return db.query(_models.User).filter(_models.User.email == email).first()

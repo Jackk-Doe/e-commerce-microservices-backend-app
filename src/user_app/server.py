@@ -26,7 +26,7 @@ class User(UserServicer):
                 await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
             # Check input name and email already existed
-            if not existed_user:
+            if existed_user is None:
                 await context.abort(grpc.StatusCode.NOT_FOUND, 'User with the given name or email is NOT existed')
 
             # Check Password matching
@@ -70,7 +70,7 @@ class User(UserServicer):
             except Exception as err:
                 await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
-            if not user:
+            if user is None:
                 await context.abort(grpc.StatusCode.NOT_FOUND, 'User from a decoded input token is not found')
 
             user_dto = user.toUserDTO(token=request.value)

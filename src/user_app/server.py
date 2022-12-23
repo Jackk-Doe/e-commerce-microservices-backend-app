@@ -19,8 +19,24 @@ def get_db_session():
 class User(UserServicer):
 
     async def LogIn(self, request, context):
-        # TODO : Implement logic
-        return super().LogIn(request, context)
+        with get_db_session() as db_session:
+            try:
+                existed_user = await _services_user.get_user_by_email(db=db_session, email=request.email)
+            except Exception as err:
+                await context.abort(grpc.StatusCode.INTERNAL, str(err))
+
+            # Check input name and email already existed
+            if not existed_user:
+                await context.abort(grpc.StatusCode.NOT_FOUND, 'User with the given name or email is NOT existed')
+
+            # Check Password matching
+            if existed_user.verify_password(password=request.password) == False:
+                await context.abort(grpc.StatusCode.UNAUTHENTICATED, 'Input password is not matched')
+
+            token = await _services_user.generate_token(u_id=existed_user.id)
+            user_dto = existed_user.toUserDTO(token=token)
+
+        return user_dto
 
 
     async def SignUp(self, request, context):
@@ -32,7 +48,7 @@ class User(UserServicer):
 
             # Check input name and email already existed
             if existed_user:
-                await context.abort(grpc.StatusCode.ALREADY_EXISTS, 'User with the given name or email is already existed')
+                await context.abort(grpc.StatusCode.ALREADY_EXISTS, 'User with the given name or email is ALREADY existed')
 
             try:
                 # Create new User, and save to database
@@ -40,9 +56,10 @@ class User(UserServicer):
 
             except Exception as err:
                 await context.abort(grpc.StatusCode.INTERNAL, str(err))
+                
             token = await _services_user.generate_token(u_id=new_user.id)
             user_dto = new_user.toUserDTO(token=token)
-            
+
         return user_dto
 
 

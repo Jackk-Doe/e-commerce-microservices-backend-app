@@ -25,13 +25,24 @@ class User(UserServicer):
 
     async def SignUp(self, request, context):
         with get_db_session() as db_session:
-            # TODO : Check User.name & User.email already existed
             try:
-                new_user = await _services_user.sign_up_user(db=db_session, name=request.name, email=request.email, password=request.password)
+                existed_user = await _services_user.get_user_by_name_or_email(db=db_session, name=request.name, email=request.email)
             except Exception as err:
                 await context.abort(grpc.StatusCode.INTERNAL, str(err))
-            # TODO : Generate JWT
-            user_dto = new_user.toUserDTO(token="This_is_token")
+
+            # Check input name and email already existed
+            if existed_user:
+                await context.abort(grpc.StatusCode.ALREADY_EXISTS, 'User with the given name or email is already existed')
+
+            try:
+                # Create new User, and save to database
+                new_user = await _services_user.sign_up_user(db=db_session, name=request.name, email=request.email, password=request.password)
+
+            except Exception as err:
+                await context.abort(grpc.StatusCode.INTERNAL, str(err))
+            token = await _services_user.generate_token(u_id=new_user.id)
+            user_dto = new_user.toUserDTO(token=token)
+            
         return user_dto
 
 

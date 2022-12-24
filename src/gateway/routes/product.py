@@ -26,26 +26,33 @@ async def testRoute():
 async def get_product_by_id(p_id: str):
     try:
         product = await _grpc_serv_product.get_product_by_id(p_id=p_id)
+        product_seller = await _grpc_serv_user.internal_get_user_via_id(u_id=product.seller_id)
     except AioRpcError as rpc_err:
         http_status = await _util_grpc_status_code.convert_to_http_status_code(rpc_err.code())
         raise HTTPException(status_code=http_status, detail=rpc_err.details())
     except Exception as err:
         raise HTTPException(status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(err))
 
-    return _schema_product.from_product_grpc_message(product=product)
+    return _schema_product.from_product_grpc_message(product=product, u_name=product_seller.name)
 
 
 @router.get('/')
 async def get_products():
+    products_dto = []
     try:
         products = await _grpc_serv_product.get_products()
+        for product in products:
+            product_seller = await _grpc_serv_user.internal_get_user_via_id(u_id=product.seller_id)
+            products_dto.append(
+                _schema_product.from_product_grpc_message(product=product, u_name=product_seller.name)
+            )
     except AioRpcError as rpc_err:
         http_status = await _util_grpc_status_code.convert_to_http_status_code(rpc_err.code())
         raise HTTPException(status_code=http_status, detail=rpc_err.details())
     except Exception as err:
         raise HTTPException(status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(err))
 
-    return [_schema_product.from_product_grpc_message(product=product) for product in products]
+    return products_dto
 
 
 @router.post('/')
@@ -59,7 +66,7 @@ async def create_product(
     try:
         # Get User data
         user = await _grpc_serv_user.internal_get_user_via_token(token=token)
-        
+
         # Create Product
         product = await _grpc_serv_product.create_product(
             u_id=user.id,
@@ -75,4 +82,4 @@ async def create_product(
     except Exception as err:
         raise HTTPException(status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(err))
 
-    return _schema_product.from_product_grpc_message(product=product)
+    return _schema_product.from_product_grpc_message(product=product, u_name=user.name)

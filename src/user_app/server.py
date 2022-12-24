@@ -105,7 +105,7 @@ class User(UserServicer):
         return id
 
 
-    async def InternalGetMe(self, request, context):
+    async def InternalGetUserViaToken(self, request, context):
         with get_db_session() as db_session:
             try:
                 user = await _services_user.get_user_by_token(db=db_session, token=request.value)
@@ -116,6 +116,22 @@ class User(UserServicer):
                 await context.abort(grpc.StatusCode.NOT_FOUND, 'User from a decoded input token is not found')
 
             user_dto = user.toInternalUserDTO(token=request.value)
+
+        return user_dto
+
+
+    async def InternalGetUserViaId(self, request, context):
+        with get_db_session() as db_session:
+            try:
+                user = await _services_user.get_user_by_id(db=db_session, id=request.value)
+            except Exception as err:
+                await context.abort(grpc.StatusCode.INTERNAL, str(err))
+
+            if user is None:
+                await context.abort(grpc.StatusCode.NOT_FOUND, 'User of an input Id is not found')
+
+            token = await _services_user.generate_token(u_id=user.id)
+            user_dto = user.toInternalUserDTO(token=token)
 
         return user_dto
 

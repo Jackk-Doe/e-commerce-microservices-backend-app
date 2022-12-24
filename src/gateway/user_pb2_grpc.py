@@ -34,9 +34,14 @@ class UserStub(object):
                 request_serializer=user__pb2.Token.SerializeToString,
                 response_deserializer=user__pb2.Id.FromString,
                 )
-        self.InternalGetMe = channel.unary_unary(
-                '/user.User/InternalGetMe',
+        self.InternalGetUserViaToken = channel.unary_unary(
+                '/user.User/InternalGetUserViaToken',
                 request_serializer=user__pb2.Token.SerializeToString,
+                response_deserializer=user__pb2.InternalUserDTO.FromString,
+                )
+        self.InternalGetUserViaId = channel.unary_unary(
+                '/user.User/InternalGetUserViaId',
+                request_serializer=user__pb2.Id.SerializeToString,
                 response_deserializer=user__pb2.InternalUserDTO.FromString,
                 )
 
@@ -72,7 +77,13 @@ class UserServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def InternalGetMe(self, request, context):
+    def InternalGetUserViaToken(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def InternalGetUserViaId(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -101,9 +112,14 @@ def add_UserServicer_to_server(servicer, server):
                     request_deserializer=user__pb2.Token.FromString,
                     response_serializer=user__pb2.Id.SerializeToString,
             ),
-            'InternalGetMe': grpc.unary_unary_rpc_method_handler(
-                    servicer.InternalGetMe,
+            'InternalGetUserViaToken': grpc.unary_unary_rpc_method_handler(
+                    servicer.InternalGetUserViaToken,
                     request_deserializer=user__pb2.Token.FromString,
+                    response_serializer=user__pb2.InternalUserDTO.SerializeToString,
+            ),
+            'InternalGetUserViaId': grpc.unary_unary_rpc_method_handler(
+                    servicer.InternalGetUserViaId,
+                    request_deserializer=user__pb2.Id.FromString,
                     response_serializer=user__pb2.InternalUserDTO.SerializeToString,
             ),
     }
@@ -185,7 +201,7 @@ class User(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def InternalGetMe(request,
+    def InternalGetUserViaToken(request,
             target,
             options=(),
             channel_credentials=None,
@@ -195,8 +211,25 @@ class User(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/user.User/InternalGetMe',
+        return grpc.experimental.unary_unary(request, target, '/user.User/InternalGetUserViaToken',
             user__pb2.Token.SerializeToString,
+            user__pb2.InternalUserDTO.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def InternalGetUserViaId(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/user.User/InternalGetUserViaId',
+            user__pb2.Id.SerializeToString,
             user__pb2.InternalUserDTO.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

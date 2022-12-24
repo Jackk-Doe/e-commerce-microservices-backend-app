@@ -42,12 +42,13 @@ service User {
     rpc SignUp (UserSignUpForm) returns (UserDTO);
     rpc GetMe (Token) returns (UserDTO);
 
-    
+
     /*
     MICROSERVICES INTERNAL ONLY Services
     */
     rpc GetId (Token) returns (Id);
-    rpc InternalGetMe (Token) returns (InternalUserDTO);
+    rpc InternalGetUserViaToken (Token) returns (InternalUserDTO);
+    rpc InternalGetUserViaId (Id) returns (InternalUserDTO);
 
     // Admin priviledge services
     // TODO : Implement LATER

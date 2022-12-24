@@ -25,3 +25,16 @@ async def get_product_by_id(p_id: str):
         raise HTTPException(status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(err))
 
     return _schema_product.from_product_grpc_message(product=product)
+
+
+@router.get('/')
+async def get_products():
+    try:
+        products = await _grpc_serv_product.get_products()
+    except AioRpcError as rpc_err:
+        http_status = await _util_grpc_status_code.convert_to_http_status_code(rpc_err.code())
+        raise HTTPException(status_code=http_status, detail=rpc_err.details())
+    except Exception as err:
+        raise HTTPException(status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(err))
+
+    return [_schema_product.from_product_grpc_message(product=product) for product in products]

@@ -20,3 +20,16 @@ async def get_products() -> list[_pb_product.ProductDTO]:
             products.append(product)
 
     return products
+
+
+async def create_product(u_id: str, name: str, des: str, price: float, amount: int) -> _pb_product.ProductDTO:
+    async with grpc.aio.insecure_channel(_envs.PRODUCT_URL) as channel:
+        stub = ProductStub(channel=channel)
+        product = await stub.CreateProduct(_pb_product.ProductInputForm(
+            name=name,
+            description=des,
+            seller_id=u_id,
+            price=price,
+            amount=amount
+        ))
+    return product

@@ -11,7 +11,7 @@ async def testApp():
     return {"Hello": "FastAPI!"}
 
 
-# Add API routers
+# Add API routers : Product & User
 app.include_router(_product_route.router)
 
 

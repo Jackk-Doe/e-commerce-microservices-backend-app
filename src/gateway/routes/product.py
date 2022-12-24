@@ -24,14 +24,4 @@ async def get_product_by_id(p_id: str):
     except Exception as err:
         raise HTTPException(status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(err))
 
-    product_dto = _schema_product.ProductDTO(
-        id=product.id,
-        name=product.name,
-        description=product.description,
-        seller_id=product.seller_id,
-        image_path=product.image_path,
-        price=product.price,
-        amount=product.amount,
-    )
-
-    return product_dto
+    return _schema_product.from_product_grpc_message(product=product)

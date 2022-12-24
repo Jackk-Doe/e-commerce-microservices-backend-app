@@ -55,7 +55,7 @@ async def get_products():
     return products_dto
 
 
-@router.post('/')
+@router.post('/', status_code=http.HTTPStatus.CREATED)
 async def create_product(
     body_input: _schema_product.ProductInputForm, 
     token: str = Depends(_token_auth_scheme)

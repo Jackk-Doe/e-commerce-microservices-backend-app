@@ -13,6 +13,14 @@ class ProductDTO(BaseModel):
     amount: int
 
 
+class ProductInputForm(BaseModel):
+    name: str
+    description: str
+    price: float
+    amount: int
+    # TODO: Add image upload later
+
+
 # Create ProductDTO schema, from arg of product grpc message
 def from_product_grpc_message(product: _pb_product.ProductDTO) -> ProductDTO:
     return ProductDTO(

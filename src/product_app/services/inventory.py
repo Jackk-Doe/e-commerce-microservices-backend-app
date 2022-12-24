@@ -19,7 +19,7 @@ async def get_inventory_by_product_id(db: Session, p_id: str) -> _models.Invento
 
 async def delete_inventory_by_product_id(db: Session, p_id: str) -> None:
     inventory = await get_inventory_by_product_id(db=db, p_id=p_id)
-    if not inventory:
+    if inventory is None:
         # If no Inventory, stop here
         return
     db.delete(inventory)
@@ -28,7 +28,7 @@ async def delete_inventory_by_product_id(db: Session, p_id: str) -> None:
 
 async def update_inventory(db: Session, p_id: str, amount: int) -> _models.Inventory:
     inventory = await get_inventory_by_product_id(db=db, p_id=p_id)
-    if not inventory:
+    if inventory is None:
         # If no Inventory obj of the updating Product, create new
         inventory = await create_inventory(db=db, p_id=p_id, amount=amount)
     else:

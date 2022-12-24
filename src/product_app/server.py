@@ -23,14 +23,14 @@ def get_db_session() -> Optional[_db.SessionLocal]:
 class Product(ProductServicer):
     async def GetProducts(self, request, context):
         db_session = get_db_session()
-        if not db_session:
+        if db_session is None:
             await context.abort(grpc.StatusCode.INTERNAL, "Error with getting DB Local Session")
 
         # TODO : Put in try-except
         for product in await _services_product.get_products(db=db_session):
             inventory = await _services_inventory.get_inventory_by_product_id(db=db_session, p_id=product.id)
             # TODO : Get product image
-            if not inventory:
+            if inventory is None:
                 await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID has no Inventory")
             product_dto = product.toProductDTO(amount=inventory.amount)
             yield product_dto
@@ -42,7 +42,7 @@ class Product(ProductServicer):
             await context.abort(grpc.StatusCode.NOT_FOUND, "Request Product ID can't be EMPTY")
 
         db_session = get_db_session()
-        if not db_session:
+        if db_session is None:
             await context.abort(grpc.StatusCode.INTERNAL, "Error with getting DB Local Session")
 
         try:
@@ -50,7 +50,7 @@ class Product(ProductServicer):
         except Exception as err:
             await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
-        if not product:
+        if product is None:
             await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID is not found")
 
         # TODO : Get product image
@@ -61,7 +61,7 @@ class Product(ProductServicer):
         except Exception as err:
             await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
-        if not inventory:
+        if inventory is None:
             await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID has no Inventory")
 
         product_dto = product.toProductDTO(amount=inventory.amount)
@@ -72,7 +72,7 @@ class Product(ProductServicer):
 
     async def CreateProduct(self, request, context):
         db_session = get_db_session()
-        if not db_session:
+        if db_session is None:
             await context.abort(grpc.StatusCode.INTERNAL, "Error with getting DB Local Session")
 
 
@@ -111,7 +111,7 @@ class Product(ProductServicer):
         status = Status() #Default: False
 
         db_session = get_db_session()
-        if not db_session:
+        if db_session is None:
             await context.abort(grpc.StatusCode.INTERNAL, "Error with getting DB Local Session")
 
 
@@ -120,7 +120,7 @@ class Product(ProductServicer):
         except Exception as err:
             await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
-        if not product:
+        if product is None:
             await context.abort(grpc.StatusCode.NOT_FOUND, "Deleting product of the given request ID is not found")
 
         if product.seller_id != request.user_id.value:
@@ -143,7 +143,7 @@ class Product(ProductServicer):
         if request.ids.product_id.value == '' or request.ids.user_id.value == '':
             await context.abort(grpc.StatusCode.NOT_FOUND, "Request Product ID and User ID can't be EMPTY")
         db_session = get_db_session()
-        if not db_session:
+        if db_session is None:
             await context.abort(grpc.StatusCode.INTERNAL, "Error with getting DB Local Session")
 
 
@@ -151,7 +151,7 @@ class Product(ProductServicer):
             product = await _services_product.get_product_by_id(db=db_session, id=request.ids.product_id.value)
         except Exception as err:
             await context.abort(grpc.StatusCode.INTERNAL, str(err))
-        if not product:
+        if product is None:
             await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID is not found")
 
         if product.seller_id != request.ids.user_id.value:

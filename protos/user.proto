@@ -27,11 +27,27 @@ message UserDTO {
     string token = 3;
 }
 
+message InternalUserDTO {
+    string name = 1;
+    string email = 2;
+    string token = 3;
+    string id = 4;
+}
+
 service User {
+    /*
+    CLIENT ACCESSIBLE Services
+    */
     rpc LogIn (UserLogInForm) returns (UserDTO);
     rpc SignUp (UserSignUpForm) returns (UserDTO);
     rpc GetMe (Token) returns (UserDTO);
+
+    
+    /*
+    MICROSERVICES INTERNAL ONLY Services
+    */
     rpc GetId (Token) returns (Id);
+    rpc InternalGetMe (Token) returns (InternalUserDTO);
 
     // Admin priviledge services
     // TODO : Implement LATER

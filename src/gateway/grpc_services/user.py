@@ -17,3 +17,10 @@ async def internal_get_user_via_token(token: str) -> _pb_user.InternalUserDTO:
         stub = UserStub(channel=channel)
         user = await stub.InternalGetUserViaToken(_pb_user.Token(value=token))
     return user
+
+
+async def internal_get_user_via_id(u_id: str) -> _pb_user.InternalUserDTO:
+    async with grpc.aio.insecure_channel(_envs.USER_URL) as channel:
+        stub = UserStub(channel=channel)
+        user = await stub.InternalGetUserViaId(_pb_user.Id(value=u_id))
+    return user

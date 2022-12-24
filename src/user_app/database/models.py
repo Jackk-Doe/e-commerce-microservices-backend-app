@@ -2,7 +2,7 @@ import passlib.hash as _hash
 from sqlalchemy import Column, String
 
 from . import db as _db
-from user_pb2 import UserDTO
+from user_pb2 import UserDTO, InternalUserDTO
 
 class User(_db.Base):
     __tablename__ = "users"
@@ -24,6 +24,15 @@ class User(_db.Base):
             name=self.name,
             email=self.email,
             token=token
+        )
+
+    # Convert User model to gRPC InternalUserDTO
+    def toInternalUserDTO(self, token: str) -> InternalUserDTO:
+        return InternalUserDTO(
+            name=self.name,
+            email=self.email,
+            token=token,
+            id=self.id
         )
 
 

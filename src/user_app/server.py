@@ -18,6 +18,12 @@ def get_db_session():
 
 class User(UserServicer):
 
+    '''
+
+    CLIENT ACCESSIBLE Services
+    
+    '''
+
     async def LogIn(self, request, context):
         with get_db_session() as db_session:
             try:
@@ -78,6 +84,12 @@ class User(UserServicer):
         return user_dto
 
 
+    '''
+
+    MICROSERVICES INTERNAL ONLY Services
+
+    '''
+
     async def GetId(self, request, context):
         with get_db_session() as db_session:
             try:
@@ -91,6 +103,21 @@ class User(UserServicer):
             id = Id(value=user.id)
         # Return User.id from input token
         return id
+
+
+    async def InternalGetMe(self, request, context):
+        with get_db_session() as db_session:
+            try:
+                user = await _services_user.get_user_by_token(db=db_session, token=request.value)
+            except Exception as err:
+                await context.abort(grpc.StatusCode.INTERNAL, str(err))
+
+            if user is None:
+                await context.abort(grpc.StatusCode.NOT_FOUND, 'User from a decoded input token is not found')
+
+            user_dto = user.toInternalUserDTO(token=request.value)
+
+        return user_dto
 
 
 # Function to run Server

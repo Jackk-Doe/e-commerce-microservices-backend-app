@@ -24,6 +24,11 @@ message UserLogInForm {
 message UserDTO {
     string name = 1;
     string email = 2;
+}
+
+message UserDTOWithToken {
+    string name = 1;
+    string email = 2;
     string token = 3;
 }
 
@@ -38,8 +43,8 @@ service User {
     /*
     CLIENT ACCESSIBLE Services
     */
-    rpc LogIn (UserLogInForm) returns (UserDTO);
-    rpc SignUp (UserSignUpForm) returns (UserDTO);
+    rpc LogIn (UserLogInForm) returns (UserDTOWithToken);
+    rpc SignUp (UserSignUpForm) returns (UserDTOWithToken);
     rpc GetMe (Token) returns (UserDTO);
 
 

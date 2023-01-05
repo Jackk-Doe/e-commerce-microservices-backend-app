@@ -19,6 +19,16 @@ async def sign_up_user(name: str, email: str, password: str) -> _pb_user.UserDTO
     return user
 
 
+async def log_in_user(email: str, password: str) -> _pb_user.UserDTOWithToken:
+    async with grpc.aio.insecure_channel(_envs.USER_URL) as channel:
+        stub = UserStub(channel=channel)
+        user = await stub.LogIn(_pb_user.UserLogInForm(
+            email=email,
+            password=password
+        ))
+    return user
+
+
 '''
 MICROSERVICES INTERNAL ONLY Services
 '''

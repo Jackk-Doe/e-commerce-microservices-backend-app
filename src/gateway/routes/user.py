@@ -52,13 +52,20 @@ async def signup_user(form_data: _schema_user.UserSignUpForm):
     except Exception as err:
         raise HTTPException(status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(err))
 
-    return _schema_user.from_user_grpc_message(user=new_user)
+    return _schema_user.from_user_grpc_message_with_token(user=new_user)
 
 
 @router.post('/login')
-async def login_user(userdatas):
+async def login_user(form_data: _schema_user.UserLogInForm):
     try:
-        pass
-    except:
-        pass
+        user = await _grpc_serv_user.log_in_user(
+            email=form_data.email,
+            password=form_data.password
+        )
+    except AioRpcError as rpc_err:
+        http_status = await _util_grpc_status_code.convert_to_http_status_code(rpc_err.code())
+        raise HTTPException(status_code=http_status, detail=rpc_err.details())
+    except Exception as err:
+        raise HTTPException(status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(err))
 
+    return _schema_user.from_user_grpc_message_with_token(user=user)

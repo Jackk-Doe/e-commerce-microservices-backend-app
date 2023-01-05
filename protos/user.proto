@@ -35,8 +35,7 @@ message UserDTOWithToken {
 message InternalUserDTO {
     string name = 1;
     string email = 2;
-    string token = 3;
-    string id = 4;
+    string id = 3;
 }
 
 service User {

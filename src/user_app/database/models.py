@@ -34,11 +34,10 @@ class User(_db.Base):
         )
 
     # Convert User model to gRPC InternalUserDTO
-    def toInternalUserDTO(self, token: str) -> InternalUserDTO:
+    def toInternalUserDTO(self) -> InternalUserDTO:
         return InternalUserDTO(
             name=self.name,
             email=self.email,
-            token=token,
             id=self.id
         )
 

@@ -115,7 +115,7 @@ class User(UserServicer):
             if user is None:
                 await context.abort(grpc.StatusCode.NOT_FOUND, 'User from a decoded input token is not found')
 
-            user_dto = user.toInternalUserDTO(token=request.value)
+            user_dto = user.toInternalUserDTO()
 
         return user_dto
 
@@ -130,8 +130,7 @@ class User(UserServicer):
             if user is None:
                 await context.abort(grpc.StatusCode.NOT_FOUND, 'User of an input Id is not found')
 
-            token = await _services_user.generate_token(u_id=user.id)
-            user_dto = user.toInternalUserDTO(token=token)
+            user_dto = user.toInternalUserDTO()
 
         return user_dto
 

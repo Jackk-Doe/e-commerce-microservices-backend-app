@@ -17,12 +17,12 @@ class UserStub(object):
         self.LogIn = channel.unary_unary(
                 '/user.User/LogIn',
                 request_serializer=user__pb2.UserLogInForm.SerializeToString,
-                response_deserializer=user__pb2.UserDTO.FromString,
+                response_deserializer=user__pb2.UserDTOWithToken.FromString,
                 )
         self.SignUp = channel.unary_unary(
                 '/user.User/SignUp',
                 request_serializer=user__pb2.UserSignUpForm.SerializeToString,
-                response_deserializer=user__pb2.UserDTO.FromString,
+                response_deserializer=user__pb2.UserDTOWithToken.FromString,
                 )
         self.GetMe = channel.unary_unary(
                 '/user.User/GetMe',
@@ -95,12 +95,12 @@ def add_UserServicer_to_server(servicer, server):
             'LogIn': grpc.unary_unary_rpc_method_handler(
                     servicer.LogIn,
                     request_deserializer=user__pb2.UserLogInForm.FromString,
-                    response_serializer=user__pb2.UserDTO.SerializeToString,
+                    response_serializer=user__pb2.UserDTOWithToken.SerializeToString,
             ),
             'SignUp': grpc.unary_unary_rpc_method_handler(
                     servicer.SignUp,
                     request_deserializer=user__pb2.UserSignUpForm.FromString,
-                    response_serializer=user__pb2.UserDTO.SerializeToString,
+                    response_serializer=user__pb2.UserDTOWithToken.SerializeToString,
             ),
             'GetMe': grpc.unary_unary_rpc_method_handler(
                     servicer.GetMe,
@@ -145,7 +145,7 @@ class User(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/user.User/LogIn',
             user__pb2.UserLogInForm.SerializeToString,
-            user__pb2.UserDTO.FromString,
+            user__pb2.UserDTOWithToken.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -162,7 +162,7 @@ class User(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/user.User/SignUp',
             user__pb2.UserSignUpForm.SerializeToString,
-            user__pb2.UserDTO.FromString,
+            user__pb2.UserDTOWithToken.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

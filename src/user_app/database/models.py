@@ -2,7 +2,7 @@ import passlib.hash as _hash
 from sqlalchemy import Column, String
 
 from . import db as _db
-from user_pb2 import UserDTO, InternalUserDTO
+from user_pb2 import UserDTO, InternalUserDTO, UserDTOWithToken
 
 class User(_db.Base):
     __tablename__ = "users"
@@ -19,8 +19,15 @@ class User(_db.Base):
         return _hash.bcrypt.verify(password, self.password)
 
     # Convert User model to gRPC UserDTO
-    def toUserDTO(self, token: str) -> UserDTO:
+    def toUserDTO(self) -> UserDTO:
         return UserDTO(
+            name=self.name,
+            email=self.email
+        )
+
+    # Convert User model to gRPC UserDTOWithToken
+    def toUserDTOWithToken(self, token: str) -> UserDTOWithToken:
+        return UserDTOWithToken(
             name=self.name,
             email=self.email,
             token=token

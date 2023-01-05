@@ -4,7 +4,7 @@ import logging
 import envs as _envs
 import database.db as _db
 import services.user as _services_user
-from user_pb2 import Id, Token, UserSignUpForm, UserLogInForm, UserDTO
+from user_pb2 import Id, Token, UserSignUpForm, UserLogInForm, UserDTO, UserDTOWithToken
 from user_pb2_grpc import UserServicer, add_UserServicer_to_server
 
 
@@ -40,7 +40,7 @@ class User(UserServicer):
                 await context.abort(grpc.StatusCode.UNAUTHENTICATED, 'Input password is not matched')
 
             token = await _services_user.generate_token(u_id=existed_user.id)
-            user_dto = existed_user.toUserDTO(token=token)
+            user_dto = existed_user.toUserDTOWithToken(token=token)
 
         return user_dto
 
@@ -64,7 +64,7 @@ class User(UserServicer):
                 await context.abort(grpc.StatusCode.INTERNAL, str(err))
 
             token = await _services_user.generate_token(u_id=new_user.id)
-            user_dto = new_user.toUserDTO(token=token)
+            user_dto = new_user.toUserDTOWithToken(token=token)
 
         return user_dto
 
@@ -79,7 +79,7 @@ class User(UserServicer):
             if user is None:
                 await context.abort(grpc.StatusCode.NOT_FOUND, 'User from a decoded input token is not found')
 
-            user_dto = user.toUserDTO(token=request.value)
+            user_dto = user.toUserDTO()
 
         return user_dto
 

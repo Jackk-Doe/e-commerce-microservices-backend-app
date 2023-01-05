@@ -3,6 +3,8 @@ from fastapi import FastAPI
 
 import envs as _envs
 import routes.product as _product_route
+import routes.user as _user_route
+
 
 app = FastAPI()
 
@@ -13,6 +15,7 @@ async def testApp():
 
 # Add API routers : Product & User
 app.include_router(_product_route.router)
+app.include_router(_user_route.router)
 
 
 if __name__ == '__main__':

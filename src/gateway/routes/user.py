@@ -1,0 +1,56 @@
+import http
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi.security import OAuth2PasswordBearer
+from grpc.aio import AioRpcError
+
+import grpc_services.user as _grpc_serv_user
+import utils.grpc_status_code as _util_grpc_status_code
+
+
+# Access token via this variable
+# NOTE: if token is not given, when using this var, throw error
+_token_auth_scheme = OAuth2PasswordBearer(tokenUrl='api/user/token' ,auto_error=False)
+
+
+router = APIRouter(prefix="/user")
+
+
+@router.get('/test')
+async def testRoute():
+    return {"Test": "User router"}
+
+
+@router.get('/me')
+async def get_me(token: str = Depends(_token_auth_scheme)):
+    if token is None:
+        raise HTTPException(status_code=http.HTTPStatus.BAD_REQUEST, detail='Token is required')
+    
+    try:
+        user = await _grpc_serv_user.internal_get_user_via_token(token=token)
+
+    except AioRpcError as rpc_err:
+        http_status = await _util_grpc_status_code.convert_to_http_status_code(rpc_err.code())
+        raise HTTPException(status_code=http_status, detail=rpc_err.details())
+    except Exception as err:
+        raise HTTPException(status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(err))
+
+    print("User: ", user)
+    # TODO: Create UserDTO Schema
+    return {"Found": "user"}
+
+
+@router.post('/sigup')
+async def signup_user(userdatas):
+    try:
+        pass
+    except:
+        pass
+
+
+@router.post('/login')
+async def login_user(userdatas):
+    try:
+        pass
+    except:
+        pass
+

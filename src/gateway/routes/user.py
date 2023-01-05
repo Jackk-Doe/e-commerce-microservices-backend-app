@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 from grpc.aio import AioRpcError
 
+import schemas.user as _schema_user
 import grpc_services.user as _grpc_serv_user
 import utils.grpc_status_code as _util_grpc_status_code
 
@@ -34,9 +35,7 @@ async def get_me(token: str = Depends(_token_auth_scheme)):
     except Exception as err:
         raise HTTPException(status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(err))
 
-    print("User: ", user)
-    # TODO: Create UserDTO Schema
-    return {"Found": "user"}
+    return _schema_user.from_user_grpc_message(user=user)
 
 
 @router.post('/sigup')

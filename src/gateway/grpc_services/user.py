@@ -8,6 +8,16 @@ from user_pb2_grpc import UserStub
 CLIENT ACCESSIBLE Services
 '''
 
+async def sign_up_user(name: str, email: str, password: str) -> _pb_user.UserDTOWithToken:
+    async with grpc.aio.insecure_channel(_envs.USER_URL) as channel:
+        stub = UserStub(channel=channel)
+        user = await stub.SignUp(_pb_user.UserSignUpForm(
+            name=name,
+            email=email,
+            password=password
+        ))
+    return user
+
 
 '''
 MICROSERVICES INTERNAL ONLY Services

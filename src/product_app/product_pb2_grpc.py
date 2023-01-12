@@ -6,14 +6,7 @@ import product_pb2 as product__pb2
 
 
 class ProductStub(object):
-    """message ProductListDTO {
-    	int page = 1;
-    	int total_page = 2;
-    	int limit = 3;
-    	repeated ProductDTO products = 1;
-    }
-
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
         """Constructor.
@@ -23,7 +16,7 @@ class ProductStub(object):
         """
         self.GetProducts = channel.unary_stream(
                 '/product.Product/GetProducts',
-                request_serializer=product__pb2.Null.SerializeToString,
+                request_serializer=product__pb2.ProductListInput.SerializeToString,
                 response_deserializer=product__pb2.ProductDTO.FromString,
                 )
         self.GetProductById = channel.unary_unary(
@@ -49,14 +42,7 @@ class ProductStub(object):
 
 
 class ProductServicer(object):
-    """message ProductListDTO {
-    	int page = 1;
-    	int total_page = 2;
-    	int limit = 3;
-    	repeated ProductDTO products = 1;
-    }
-
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def GetProducts(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -93,7 +79,7 @@ def add_ProductServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetProducts': grpc.unary_stream_rpc_method_handler(
                     servicer.GetProducts,
-                    request_deserializer=product__pb2.Null.FromString,
+                    request_deserializer=product__pb2.ProductListInput.FromString,
                     response_serializer=product__pb2.ProductDTO.SerializeToString,
             ),
             'GetProductById': grpc.unary_unary_rpc_method_handler(
@@ -124,14 +110,7 @@ def add_ProductServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Product(object):
-    """message ProductListDTO {
-    	int page = 1;
-    	int total_page = 2;
-    	int limit = 3;
-    	repeated ProductDTO products = 1;
-    }
-
-    """
+    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def GetProducts(request,
@@ -145,7 +124,7 @@ class Product(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/product.Product/GetProducts',
-            product__pb2.Null.SerializeToString,
+            product__pb2.ProductListInput.SerializeToString,
             product__pb2.ProductDTO.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

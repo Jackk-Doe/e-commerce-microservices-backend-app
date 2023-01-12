@@ -26,6 +26,11 @@ class Product(ProductServicer):
         if db_session is None:
             await context.abort(grpc.StatusCode.INTERNAL, "Error with getting DB Local Session")
 
+        page = 1 if request.page == 0 else request.page
+        limit = 5 if request.limit == 0 else request.limit
+
+        print(f"Page: {page} & Limit: {limit}")
+
         # TODO : Put in try-except
         for product in await _services_product.get_products(db=db_session):
             inventory = await _services_inventory.get_inventory_by_product_id(db=db_session, p_id=product.id)

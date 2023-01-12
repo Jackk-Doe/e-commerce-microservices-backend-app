@@ -12,14 +12,19 @@ async def get_product_by_id(p_id: str) -> _pb_product.ProductDTO:
     return product
 
 
-async def get_products() -> list[_pb_product.ProductDTO]:
+async def get_products(page: int, limit: int) -> list[_pb_product.ProductListDTO]:
     async with grpc.aio.insecure_channel(_envs.PRODUCT_URL) as channel:
         stub = ProductStub(channel=channel)
-        products = []
-        async for product in stub.GetProducts(_pb_product.Null()):
-            products.append(product)
 
-    return products
+        # products_input = _pb_product.ProductListInput(page=page, limit=limit)
+        products_dto = await stub.GetProducts(_pb_product.ProductListInput(page=page, limit=limit))
+    return products_dto
+
+    #     products = []
+    #     async for product in stub.GetProducts(_pb_product.Null()):
+    #         products.append(product)
+
+    # return products
 
 
 async def create_product(u_id: str, name: str, des: str, price: float, amount: int) -> _pb_product.ProductDTO:

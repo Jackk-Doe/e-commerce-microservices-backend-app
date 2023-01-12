@@ -1,12 +1,13 @@
 import grpc
 import logging
+import math
 from typing import Optional
 
 import envs as _envs
 import database.db as _db
 import services.product as _services_product
 import services.inventory as _services_inventory
-from product_pb2 import Id, Status, ProductInputForm, ProductIdWithUserId, ProductUpdateInputForm, ProductDTO
+from product_pb2 import Id, Status, ProductInputForm, ProductIdWithUserId, ProductUpdateInputForm, ProductDTO, ProductListDTO
 from product_pb2_grpc import ProductServicer, add_ProductServicer_to_server
 
 
@@ -26,15 +27,30 @@ class Product(ProductServicer):
         if db_session is None:
             await context.abort(grpc.StatusCode.INTERNAL, "Error with getting DB Local Session")
 
-        # TODO : Put in try-except
-        for product in await _services_product.get_products(db=db_session):
-            inventory = await _services_inventory.get_inventory_by_product_id(db=db_session, p_id=product.id)
-            # TODO : Get product image
-            if inventory is None:
-                await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID has no Inventory")
-            product_dto = product.toProductDTO(amount=inventory.amount)
-            yield product_dto
-        db_session.close()
+        page = 0 if request.page == 0 else request.page - 1
+        limit = 5 if request.limit == 0 else request.limit
+
+        products_dto = ProductListDTO(page=request.page)
+
+        with get_db_session() as db_session:
+            try:
+                for product in await _services_product.get_products(db=db_session, page=page, limit=limit):
+                    # TODO : Get product image
+                    inventory = await _services_inventory.get_inventory_by_product_id(db=db_session, p_id=product.id)
+                    if inventory is None:
+                        await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID has no Inventory")
+                    product_dto = product.toProductDTO(amount=inventory.amount)
+                    products_dto.products.append(product_dto)
+
+                # Get total available pages
+                total_product_count = await _services_product.count_all_product(db=db_session)
+                total_page = math.ceil(total_product_count/limit)
+                products_dto.total_page = total_page
+
+            except Exception as err:
+                await context.abort(grpc.StatusCode.INTERNAL, str(err))
+
+        return products_dto
 
 
     async def GetProductById(self, request, context):

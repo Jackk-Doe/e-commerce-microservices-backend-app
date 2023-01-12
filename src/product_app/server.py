@@ -1,5 +1,6 @@
 import grpc
 import logging
+import math
 from typing import Optional
 
 import envs as _envs
@@ -29,8 +30,7 @@ class Product(ProductServicer):
         page = 0 if request.page == 0 else request.page - 1
         limit = 5 if request.limit == 0 else request.limit
 
-        # TODO : Calculate [total_page]
-        products_dto = ProductListDTO(page=request.page, total_page=999)
+        products_dto = ProductListDTO(page=request.page)
 
         with get_db_session() as db_session:
             try:
@@ -41,6 +41,11 @@ class Product(ProductServicer):
                         await context.abort(grpc.StatusCode.NOT_FOUND, "Product of the given request ID has no Inventory")
                     product_dto = product.toProductDTO(amount=inventory.amount)
                     products_dto.products.append(product_dto)
+
+                # Get total available pages
+                total_product_count = await _services_product.count_all_product(db=db_session)
+                total_page = math.ceil(total_product_count/limit)
+                products_dto.total_page = total_page
 
             except Exception as err:
                 await context.abort(grpc.StatusCode.INTERNAL, str(err))

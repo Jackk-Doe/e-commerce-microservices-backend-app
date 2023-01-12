@@ -4,6 +4,10 @@ from sqlalchemy.orm import Session
 import database.models as _models
 
 
+async def count_all_product(db: Session) -> int:
+    return db.query(_models.Product).count()
+
+
 async def create_product(db: Session, name: str, des: str, price: float, seller_id: str) -> _models.Product:
     id = str(uuid.uuid4())
     # TODO : put codes below in try-catch

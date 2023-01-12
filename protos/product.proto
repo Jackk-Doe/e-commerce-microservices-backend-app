@@ -52,7 +52,7 @@ message ProductListDTO {
 }
 
 service Product {
-	rpc GetProducts (ProductListInput) returns (stream ProductDTO);
+	rpc GetProducts (ProductListInput) returns (ProductListDTO);
 	rpc GetProductById (Id) returns (ProductDTO);
 	rpc CreateProduct (ProductInputForm) returns (ProductDTO);
 	rpc UpdateProduct (ProductUpdateInputForm) returns (ProductDTO);

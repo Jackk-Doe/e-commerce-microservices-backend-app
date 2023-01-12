@@ -6,14 +6,7 @@ import product_pb2 as product__pb2
 
 
 class ProductStub(object):
-    """message ProductListDTO {
-    	int page = 1;
-    	int total_page = 2;
-    	int limit = 3;
-    	repeated ProductDTO products = 1;
-    }
-
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
         """Constructor.
@@ -21,10 +14,10 @@ class ProductStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.GetProducts = channel.unary_stream(
+        self.GetProducts = channel.unary_unary(
                 '/product.Product/GetProducts',
-                request_serializer=product__pb2.Null.SerializeToString,
-                response_deserializer=product__pb2.ProductDTO.FromString,
+                request_serializer=product__pb2.ProductListInput.SerializeToString,
+                response_deserializer=product__pb2.ProductListDTO.FromString,
                 )
         self.GetProductById = channel.unary_unary(
                 '/product.Product/GetProductById',
@@ -49,14 +42,7 @@ class ProductStub(object):
 
 
 class ProductServicer(object):
-    """message ProductListDTO {
-    	int page = 1;
-    	int total_page = 2;
-    	int limit = 3;
-    	repeated ProductDTO products = 1;
-    }
-
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def GetProducts(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -91,10 +77,10 @@ class ProductServicer(object):
 
 def add_ProductServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'GetProducts': grpc.unary_stream_rpc_method_handler(
+            'GetProducts': grpc.unary_unary_rpc_method_handler(
                     servicer.GetProducts,
-                    request_deserializer=product__pb2.Null.FromString,
-                    response_serializer=product__pb2.ProductDTO.SerializeToString,
+                    request_deserializer=product__pb2.ProductListInput.FromString,
+                    response_serializer=product__pb2.ProductListDTO.SerializeToString,
             ),
             'GetProductById': grpc.unary_unary_rpc_method_handler(
                     servicer.GetProductById,
@@ -124,14 +110,7 @@ def add_ProductServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Product(object):
-    """message ProductListDTO {
-    	int page = 1;
-    	int total_page = 2;
-    	int limit = 3;
-    	repeated ProductDTO products = 1;
-    }
-
-    """
+    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def GetProducts(request,
@@ -144,9 +123,9 @@ class Product(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/product.Product/GetProducts',
-            product__pb2.Null.SerializeToString,
-            product__pb2.ProductDTO.FromString,
+        return grpc.experimental.unary_unary(request, target, '/product.Product/GetProducts',
+            product__pb2.ProductListInput.SerializeToString,
+            product__pb2.ProductListDTO.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

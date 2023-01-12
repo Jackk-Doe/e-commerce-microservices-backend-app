@@ -37,11 +37,11 @@ async def get_product_by_id(p_id: str):
 
 
 @router.get('/')
-async def get_products():
+async def get_products(page: int=1, limit: int=5):
     products_dto = []
     try:
-        products = await _grpc_serv_product.get_products()
-        for product in products:
+        products_page_n_total = await _grpc_serv_product.get_products(page=page, limit=limit)
+        for product in products_page_n_total.products:
             product_seller = await _grpc_serv_user.internal_get_user_via_id(u_id=product.seller_id)
             products_dto.append(
                 _schema_product.from_product_grpc_message(product=product, u_name=product_seller.name)
@@ -52,7 +52,11 @@ async def get_products():
     except Exception as err:
         raise HTTPException(status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(err))
 
-    return products_dto
+    return { 
+        "data": products_dto, 
+        "page": products_page_n_total.page,
+        "total_page": products_page_n_total.total_page
+        }
 
 
 @router.post('/', status_code=http.HTTPStatus.CREATED)

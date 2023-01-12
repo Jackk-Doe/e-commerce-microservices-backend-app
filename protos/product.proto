@@ -40,21 +40,19 @@ message ProductDTO {
 	string image_path = 7;
 }
 
-/// TO-USE-LATER
-// message ProductListInput {
-// 	optional int32 page = 1;
-// 	optional int32 limit = 2;
-// }
+message ProductListInput {
+	optional int32 page = 1;
+	optional int32 limit = 2;
+}
 
-/// TO-USE-LATER
-// message ProductListDTO {
-// 	int32 page = 1;
-// 	int32 total_page = 2;
-// 	repeated ProductDTO products = 1;
-// }
+message ProductListDTO {
+	int32 page = 1;
+	int32 total_page = 2;
+	repeated ProductDTO products = 3;
+}
 
 service Product {
-	rpc GetProducts (Null) returns (stream ProductDTO);
+	rpc GetProducts (ProductListInput) returns (ProductListDTO);
 	rpc GetProductById (Id) returns (ProductDTO);
 	rpc CreateProduct (ProductInputForm) returns (ProductDTO);
 	rpc UpdateProduct (ProductUpdateInputForm) returns (ProductDTO);
